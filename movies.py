@@ -62,11 +62,13 @@ class Movie:
 # If it does run an update statement
 # otherwise insert the object data into a new row.
 
-
     def save(self, cursor):
-        if self.movieid:
-            pass
-            cursor.execute("UPDATE movies SET ")
+        if not self.movieid:
+            cursor.execute("INSERT INTO movies (title, genres)"
+                           "VALUES (%s, %s);", (self.title, self.genres))
+        else:
+            cursor.execute("UPDATE movies SET title = %s, genres = %s WHERE movieid = %s;",
+                           (self.title, self.genres, self.movieid))
 
     @staticmethod
     def update_movie_rating(cursor, movie_id, rating):
@@ -75,10 +77,11 @@ class Movie:
             cursor.execute("UPDATE movies SET mpaa_rating =%s WHERE movieid = %s;",(rating,movie_id))
             print("Movie rating updated.")
         else:
-            cursor.execute("INSERT INTO movies (movieid, title, genres, mpaa_rating) VALUES(%s, %s, %s, %s);",(movie_id, movie.title, movie.genres, rating))
+            cursor.execute("INSERT INTO movies "
+                           "(movieid, title, genres, mpaa_rating) "
+                           "VALUES(%s, %s, %s, %s);",
+                           (movie_id, movie.title, movie.genres, rating))
             print("{} added to database with it's {} rating".format(movie.title, rating))
-
-
 
     def __str__(self):
         return self.title
@@ -135,6 +138,14 @@ class Tag:
         return Tag(tag_dict['userid'], tag_dict['movieid'], tag_dict['tag'],
                    tag_dict['timestamp'], tag_dict['id'])
 
+# Make sure the timestamp field
+# converts the timestamp to
+# something readable instead of
+# a unix timestamp
+
+# Create a staticmethod that
+# takes a movie id and returns
+# a list of tags
 
 if __name__ == '__main__':
 
@@ -159,6 +170,7 @@ if __name__ == '__main__':
     akira = Movie.get_by_id(cur, 1274)
 
     akira.update_movie_rating(cur, 1274, 'R')
+
     conn.commit()
 
 
