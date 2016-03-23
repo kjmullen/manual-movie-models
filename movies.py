@@ -78,9 +78,9 @@ class Movie:
             print("Movie rating updated.")
         else:
             cursor.execute("INSERT INTO movies "
-                           "(movieid, title, genres, mpaa_rating) "
-                           "VALUES(%s, %s, %s, %s);",
-                           (movie_id, movie.title, movie.genres, rating))
+                           "(title, genres, mpaa_rating) "
+                           "VALUES(%s, %s, %s);",
+                           (movie.title, movie.genres, rating))
             print("{} added to database with it's {} rating".format(movie.title, rating))
 
     def __str__(self):
